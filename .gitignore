@@ -1,56 +1,29 @@
-# macOS system files
-.DS_Store
-.AppleDouble
-.LSOverride
-Icon
-._*
+# 데이터셋 (다운로드/압축해제 생성물)
+bank-additional/
+bank-additional.zip
+data/
 
-# Jupyter Notebook
-.ipynb_checkpoints
-*/.ipynb_checkpoints/*
+# 노트북 실행 중 생성되는 임시/출력물 (%%writefile 로 생성되는 스크립트 포함)
+tmp/
+processing/
+training/
+code/
+
+# 모델 아티팩트
+xgboost-model
+*.tar.gz
+*.model
+
+# SageMaker / MLflow 로컬 산출물
+mlruns/
+.sagemaker/
 
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
 *.egg-info/
-.installed.cfg
-*.egg
+.ipynb_checkpoints/
 
-# Virtual Environment
-venv/
-ENV/
-env/
-
-# IDE specific files
-.idea/
-.vscode/
+# OS / 에디터
+.DS_Store
 *.swp
-*.swo
-
-# AWS
-.aws-sam/
-samconfig.toml
-
-# MLflow
-mlruns/
-
-# SageMaker
-.sagemaker/
-
-# Backup
-backup/
