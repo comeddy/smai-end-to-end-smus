@@ -1,116 +1,258 @@
-# SageMaker Unified Studio에서 진행하는 SageMaker AI ML 엔드투엔드 워크플로우
+# Amazon SageMaker AI End-to-End ML Workshop
 
-이 프로젝트는 Amazon SageMaker와 MLflow를 활용한 완전한 머신러닝 워크플로우를 구현합니다. 은행 마케팅 데이터셋을 사용하여 고객의 정기예금 가입 여부를 예측하는 분류 모델을 개발합니다.
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
+[![MLflow](https://img.shields.io/badge/MLflow-2.13.2-orange.svg)](https://mlflow.org/)
+[![English](https://img.shields.io/badge/lang-English-blue)](#english)
+[![한국어](https://img.shields.io/badge/lang-한국어-red)](#한국어)
 
-## 📋 프로젝트 구조
+A hands-on workshop for end-to-end machine learning workflows on Amazon SageMaker Unified Studio with MLflow experiment tracking.
+/ Amazon SageMaker Unified Studio와 MLflow로 진행하는 엔드투엔드 머신러닝 워크플로우 실습 워크샵.
 
-### 1. **환경 설정** (`0-setup.ipynb`)
-   - AWS 환경 및 권한 설정
-   - SageMaker AI 프로젝트 초기화
-   - MLflow 추적 서버 연결
-   - 데이터 준비 및 기본 탐색
-   - 실험 환경 초기화
+---
 
-### 2. **데이터 전처리** (`1-preprocessing.ipynb`)
-   - SageMaker Processing Job을 사용한 대규모 데이터 전처리
-   - 특성 엔지니어링 및 원-핫 인코딩
-   - 훈련/검증/테스트 데이터 분할
-   - MLflow를 통한 전처리 과정 추적
+# English
 
-### 3. **모델 훈련** (`2-training.ipynb`)
-   - SageMaker Training Job을 사용한 모델 훈련
-   - XGBoost 알고리즘 활용
-   - 하이퍼파라미터 튜닝
-   - Script Mode를 통한 커스텀 훈련
-   - MLflow를 통한 모델 등록 및 실험 추적
+## Overview
 
-### 4. **모델 성능 평가** (`3-model-evaluation.ipynb`)
-   - 훈련된 모델의 로컬 테스트
-   - 모델 성능 비교 및 분석
-   - 혼동 행렬 및 분류 리포트 생성
-   - MLflow를 통한 실험 추적 및 시각화
-   - 최고 성능 모델 선택
+This workshop provides a step-by-step guide to building a complete machine learning workflow on **Amazon SageMaker Unified Studio**. It covers data preprocessing, model training, experiment tracking with **MLflow**, evaluation, real-time deployment, and pipeline automation across a sequence of six Jupyter notebooks.
 
-### 5. **모델 배포 및 테스트** (`4-test-and-deploy.ipynb`)
-   - SageMaker 모델 등록
-   - 실시간 엔드포인트 배포
-   - A/B 테스트를 위한 멀티 모델 배포
-   - 트래픽 분산 및 가중치 조정
-   - 배포된 모델 테스트
+The workshop contains two independent tracks:
+- **Notebooks 0–4** — Bank Marketing dataset, binary classification (predict term-deposit subscription). Run sequentially; notebooks share state via `%store`.
+- **Notebook 5** — UCI Abalone dataset, regression. A standalone SageMaker Pipelines demo that can run independently of Notebooks 0–4.
 
-### 6. **ML 파이프라인** (`5-pipelines_preprocess_train_evaluate_batch_transform.ipynb`)
-   - SageMaker 파이프라인을 사용한 엔드투엔드 자동화
-   - 데이터 전처리, 모델 훈련, 평가, 배포 자동화
-   - 조건부 모델 등록
-   - 파이프라인 실행 및 모니터링
-   - CI/CD 워크플로우 구축
+## Features
 
-   > ⚠️ **참고**: 이 노트북은 0~4번과 **다른 데이터셋(UCI Abalone, 회귀 문제)** 을 사용하는 **독립 예제**입니다.
-   > 앞 노트북들의 은행 마케팅(분류) 결과를 이어받지 않으며, SageMaker Pipelines 사용법 자체를
-   > 보여주기 위한 stand-alone 데모입니다. 따라서 0~4번과 별개로 단독 실행할 수 있습니다.
+- **Scalable data preprocessing** — Run large-scale feature engineering and data splits using SageMaker Processing Jobs.
+- **XGBoost training with Script Mode** — Train built-in and custom XGBoost models with hyperparameter tuning via SageMaker Training Jobs.
+- **MLflow experiment tracking** — Log parameters, metrics, and artifacts; register models in the MLflow Model Registry.
+- **Real-time endpoint deployment with A/B testing** — Deploy models to SageMaker endpoints and route traffic across model variants.
+- **End-to-end pipeline automation** — Orchestrate preprocessing, training, evaluation, and batch transform steps with SageMaker Pipelines.
 
-## 🚀 주요 기능
+## Prerequisites
 
-### SageMaker 통합 환경
-- **SageMaker AI 프로젝트**: 통합된 리소스 관리 및 협업
-- **MLflow 통합**: 실험 추적, 모델 버전 관리, 아티팩트 저장
-- **자동화된 워크플로우**: Processing → Training → Evaluation → Deployment 파이프라인
+- Access to **Amazon SageMaker Unified Studio** (SageMaker Studio domain with a DataZone project)
+- Python 3.8 or later
+- Jupyter environment (provided by SageMaker Studio)
+- AWS IAM role with permissions for SageMaker, S3, and DataZone
+- MLflow tracking server provisioned under the `MLExperiments` environment name
 
-### 데이터 처리 및 모델링
-- **확장 가능한 전처리**: SageMaker Processing으로 대용량 데이터 처리
-- **분산 훈련**: SageMaker Training Job을 통한 효율적인 모델 훈련
-- **하이퍼파라미터 최적화**: 자동화된 하이퍼파라미터 튜닝
-- **실시간 추론**: SageMaker 엔드포인트를 통한 실시간 예측
+## Installation
 
-### 실험 관리 및 모니터링
-- **실험 추적**: MLflow를 통한 모든 실험 기록
-- **모델 비교**: 다양한 모델 성능 비교 및 선택
-- **아티팩트 관리**: 모델, 데이터, 코드의 버전 관리
+```bash
+# 1. Clone the repository
+git clone https://github.com/comeddy/smai-end-to-end-smus.git
+cd smai-end-to-end-smus
 
-## 📊 사용 데이터
+# 2. Open the cloned directory in SageMaker Studio
+# File > Open from path (or use the Studio file browser)
 
-**은행 마케팅 데이터셋 (Bank Marketing Dataset)** — 0~4번 노트북
-- **목표**: 고객의 정기예금 가입 여부 예측 (이진 분류)
-- **특성**: 고객 정보, 연락 정보, 경제 지표 등 21개 특성
-- **데이터 크기**: 41,188개 샘플
-- **클래스 불균형**: 약 11% 양성 클래스 (정기예금 가입)
+# 3. Run notebook 0 first — it installs dependencies and persists shared config
+# The install guard prevents an infinite restart loop on "Run All"
+```
 
-**UCI Abalone 데이터셋** — 5번 노트북 (독립 예제)
-- **목표**: 물리적 측정값으로 전복의 고리 수(나이) 예측 (회귀)
-- 5번은 SageMaker Pipelines 사용법을 보여주기 위한 별도 데모로, 위 은행 마케팅 흐름과 무관합니다.
+> The kernel image ships with modular SageMaker packages only. `0-setup.ipynb` installs
+> `sagemaker>=2.220,<3`, `mlflow==2.13.2`, and `setuptools<81` automatically.
 
-## 🛠️ 기술 스택
+## Usage
 
-- **AWS SageMaker**: ML 플랫폼 및 관리형 서비스
-- **MLflow**: 실험 추적 및 모델 관리
-- **Python**: 데이터 처리 및 모델링
-- **Scikit-learn**: 머신러닝 라이브러리
-- **XGBoost**: 그래디언트 부스팅 알고리즘
-- **Pandas/NumPy**: 데이터 조작 및 분석
+Run the notebooks in order:
 
-## 📈 학습 목표
+```text
+0-setup.ipynb                    # Initialize environment, connect MLflow tracking server
+1-preprocessing.ipynb            # Preprocess data with SageMaker Processing Job
+2-training.ipynb                 # Train XGBoost models, register to MLflow Model Registry
+3-model-evaluation.ipynb         # Evaluate and compare models, select the best
+4-test-and-deploy.ipynb          # Deploy to SageMaker endpoint, run A/B test
+5-pipelines_...ipynb             # (Standalone) SageMaker Pipelines demo with Abalone dataset
+```
 
-이 프로젝트를 통해 다음을 학습할 수 있습니다:
+Example: invoking the deployed endpoint from Notebook 4.
 
-1. **SageMaker 서비스 활용**: Processing, Training, Hosting 서비스 사용법
-2. **MLOps 실습**: 실험 추적, 모델 버전 관리, 자동화된 파이프라인
-3. **확장 가능한 ML**: 클라우드 환경에서의 대규모 ML 워크플로우
-4. **모범 사례**: 코드 구조화, 실험 관리, 배포 전략
+```python
+import boto3, json
 
-## 🚦 시작하기
+runtime = boto3.client("sagemaker-runtime", region_name=region)
+response = runtime.invoke_endpoint(
+    EndpointName=endpoint_name,
+    ContentType="text/csv",
+    Body="44,1,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0"
+)
+print(json.loads(response["Body"].read()))
+# Output: {'predictions': [{'score': 0.12}]}
+```
 
-1. **환경 설정**: `0-setup.ipynb` 실행
-2. **데이터 전처리**: `1-preprocessing.ipynb` 실행  
-3. **모델 훈련**: `2-training.ipynb` 실행
-4. **모델 평가**: `3-model-evaluation.ipynb` 실행
-5. **모델 배포**: `4-test-and-deploy.ipynb` 실행
-6. **파이프라인 구축**: `5-pipelines_preprocess_train_evaluate_batch_transform.ipynb` 실행
+## Project Structure
 
-각 노트북은 순차적으로 실행되도록 설계되었으며, 이전 단계의 결과를 다음 단계에서 활용합니다.
-단, **5번 노트북은 다른 데이터셋(Abalone)을 쓰는 독립 예제**이므로 0~4번과 별개로 단독 실행할 수 있습니다.
+```text
+smai-end-to-end-smus/
+├── 0-setup.ipynb                          # Environment setup and MLflow connection
+├── 1-preprocessing.ipynb                  # SageMaker Processing Job — feature engineering
+├── 2-training.ipynb                       # SageMaker Training Job — XGBoost + MLflow
+├── 3-model-evaluation.ipynb               # Model comparison and best-model selection
+├── 4-test-and-deploy.ipynb               # Real-time endpoint deploy + A/B test
+├── 5-pipelines_preprocess_train_          # Standalone SageMaker Pipelines demo (Abalone)
+│   evaluate_batch_transform.ipynb
+├── CLAUDE.md                              # Claude Code project instructions
+└── README.md                             # This file
 
-## 📝 참고사항
+# Runtime-generated (gitignored):
+# code/          — Python scripts emitted by %%writefile cells
+# processing/    — Preprocessing script for SageMaker Processing
+# training/      — Training script for SageMaker Training
+# bank-additional/ — Bank Marketing dataset (downloaded by Notebook 0)
+# data/          — Processed train/validation/test splits
+# mlruns/        — Local MLflow run artifacts
+```
 
-- 이 프로젝트는 AWS SageMaker Studio 환경에서 최적화되어 있습니다.
-- MLflow 추적 서버가 필요하며, 설정은 `0-setup.ipynb`에서 수행합니다.
-- 모든 AWS 리소스는 사용 후 정리하는 것을 권장합니다.
+## Contributing
+
+1. Fork the repository.
+2. Create a feature branch.
+   ```bash
+   git checkout -b feat/your-feature-name
+   ```
+3. Commit your changes using [Conventional Commits](https://www.conventionalcommits.org/).
+   ```bash
+   git commit -m "feat: add hyperparameter tuning example to notebook 2"
+   # Other prefixes: fix:, docs:, refactor:, chore:
+   ```
+4. Push the branch.
+   ```bash
+   git push origin feat/your-feature-name
+   ```
+5. Open a Pull Request against `main`.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Contact
+
+- **Maintainer**: [comeddy](https://github.com/comeddy)
+- **Issues**: [github.com/comeddy/smai-end-to-end-smus/issues](https://github.com/comeddy/smai-end-to-end-smus/issues)
+- **Email**: comeddy@gmail.com
+
+---
+
+# 한국어
+
+## 개요
+
+이 워크샵은 **Amazon SageMaker Unified Studio** 위에서 완전한 머신러닝 워크플로우를 단계별로 구축하는 실습 가이드입니다. 데이터 전처리, 모델 훈련, **MLflow** 실험 추적, 평가, 실시간 배포, 파이프라인 자동화까지 6개의 Jupyter 노트북으로 구성되어 있습니다.
+
+워크샵은 두 개의 독립적인 트랙으로 구성됩니다.
+- **노트북 0–4** — 은행 마케팅 데이터셋, 이진 분류 (정기예금 가입 여부 예측). 순차 실행하며 `%store`를 통해 노트북 간 상태를 공유합니다.
+- **노트북 5** — UCI Abalone 데이터셋, 회귀. 노트북 0–4와 무관하게 단독 실행 가능한 SageMaker Pipelines 독립 데모입니다.
+
+## 주요 기능
+
+- **확장 가능한 데이터 전처리** — SageMaker Processing Job으로 대용량 특성 엔지니어링 및 데이터 분할을 수행합니다.
+- **Script Mode XGBoost 훈련** — SageMaker Training Job을 통해 빌트인 및 커스텀 XGBoost 모델을 훈련하고 하이퍼파라미터를 튜닝합니다.
+- **MLflow 실험 추적** — 파라미터, 메트릭, 아티팩트를 기록하고 MLflow Model Registry에 모델을 등록합니다.
+- **A/B 테스트를 포함한 실시간 엔드포인트 배포** — SageMaker 엔드포인트에 모델을 배포하고 트래픽을 여러 모델 변형에 분산합니다.
+- **엔드투엔드 파이프라인 자동화** — SageMaker Pipelines로 전처리, 훈련, 평가, 배치 변환 단계를 오케스트레이션합니다.
+
+## 사전 요구 사항
+
+- **Amazon SageMaker Unified Studio** 접근 권한 (DataZone 프로젝트가 포함된 SageMaker Studio 도메인)
+- Python 3.8 이상
+- Jupyter 환경 (SageMaker Studio에서 제공)
+- SageMaker, S3, DataZone 권한이 포함된 AWS IAM 역할
+- `MLExperiments` 환경 이름으로 프로비저닝된 MLflow 추적 서버
+
+## 설치 방법
+
+```bash
+# 1. 저장소를 클론합니다
+git clone https://github.com/comeddy/smai-end-to-end-smus.git
+cd smai-end-to-end-smus
+
+# 2. SageMaker Studio에서 클론된 디렉토리를 엽니다
+# File > Open from path (또는 Studio 파일 브라우저 사용)
+
+# 3. 0번 노트북을 먼저 실행합니다 — 의존성을 설치하고 공유 설정을 저장합니다
+# 설치 가드가 "Run All" 시 무한 재시작 루프를 방지합니다
+```
+
+> 커널 이미지에는 모듈형 SageMaker 패키지만 포함되어 있습니다. `0-setup.ipynb`가
+> `sagemaker>=2.220,<3`, `mlflow==2.13.2`, `setuptools<81`을 자동으로 설치합니다.
+
+## 사용법
+
+노트북을 순서대로 실행합니다.
+
+```text
+0-setup.ipynb                    # 환경 초기화, MLflow 추적 서버 연결
+1-preprocessing.ipynb            # SageMaker Processing Job으로 데이터 전처리
+2-training.ipynb                 # XGBoost 모델 훈련, MLflow Model Registry에 등록
+3-model-evaluation.ipynb         # 모델 비교 및 최고 성능 모델 선택
+4-test-and-deploy.ipynb          # SageMaker 엔드포인트 배포, A/B 테스트
+5-pipelines_...ipynb             # (독립 실행) Abalone 데이터셋으로 SageMaker Pipelines 데모
+```
+
+노트북 4에서 배포된 엔드포인트를 호출하는 예시입니다.
+
+```python
+import boto3, json
+
+runtime = boto3.client("sagemaker-runtime", region_name=region)
+response = runtime.invoke_endpoint(
+    EndpointName=endpoint_name,
+    ContentType="text/csv",
+    Body="44,1,0,1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,1,0"
+)
+print(json.loads(response["Body"].read()))
+# 출력 예시: {'predictions': [{'score': 0.12}]}
+```
+
+## 프로젝트 구조
+
+```text
+smai-end-to-end-smus/
+├── 0-setup.ipynb                          # 환경 설정 및 MLflow 연결
+├── 1-preprocessing.ipynb                  # SageMaker Processing Job — 특성 엔지니어링
+├── 2-training.ipynb                       # SageMaker Training Job — XGBoost + MLflow
+├── 3-model-evaluation.ipynb               # 모델 비교 및 최적 모델 선택
+├── 4-test-and-deploy.ipynb               # 실시간 엔드포인트 배포 + A/B 테스트
+├── 5-pipelines_preprocess_train_          # 독립 SageMaker Pipelines 데모 (Abalone)
+│   evaluate_batch_transform.ipynb
+├── CLAUDE.md                              # Claude Code 프로젝트 지침
+└── README.md                             # 이 파일
+
+# 런타임 생성 파일 (gitignore 적용):
+# code/          — %%writefile 셀이 생성하는 Python 스크립트
+# processing/    — SageMaker Processing 전처리 스크립트
+# training/      — SageMaker Training 훈련 스크립트
+# bank-additional/ — 은행 마케팅 데이터셋 (노트북 0에서 다운로드)
+# data/          — 전처리된 훈련/검증/테스트 분할 데이터
+# mlruns/        — 로컬 MLflow 실행 아티팩트
+```
+
+## 기여 방법
+
+1. 저장소를 포크합니다.
+2. 기능 브랜치를 생성합니다.
+   ```bash
+   git checkout -b feat/기능-이름
+   ```
+3. [Conventional Commits](https://www.conventionalcommits.org/) 형식으로 커밋합니다.
+   ```bash
+   git commit -m "feat: 노트북 2에 하이퍼파라미터 튜닝 예시 추가"
+   # 그 외 접두사: fix:, docs:, refactor:, chore:
+   ```
+4. 브랜치를 푸시합니다.
+   ```bash
+   git push origin feat/기능-이름
+   ```
+5. `main` 브랜치를 대상으로 Pull Request를 엽니다.
+
+## 라이선스
+
+이 프로젝트는 [MIT 라이선스](LICENSE)를 따릅니다.
+
+## 연락처
+
+- **메인테이너**: [comeddy](https://github.com/comeddy)
+- **이슈 트래커**: [github.com/comeddy/smai-end-to-end-smus/issues](https://github.com/comeddy/smai-end-to-end-smus/issues)
+- **이메일**: comeddy@gmail.com
