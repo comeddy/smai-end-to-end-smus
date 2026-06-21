@@ -15,11 +15,12 @@ A hands-on workshop for end-to-end machine learning workflows on Amazon SageMake
 
 ## Overview
 
-This workshop provides a step-by-step guide to building a complete machine learning workflow on **Amazon SageMaker Unified Studio**. It covers data preprocessing, model training, experiment tracking with **MLflow**, evaluation, real-time deployment, and pipeline automation across a sequence of six Jupyter notebooks.
+This workshop provides a step-by-step guide to building a complete machine learning workflow on **Amazon SageMaker Unified Studio**. It covers data preprocessing, model training, experiment tracking with **MLflow**, evaluation, real-time deployment, and pipeline automation across a sequence of seven Jupyter notebooks.
 
-The workshop contains two independent tracks:
+The workshop contains three independent tracks:
 - **Notebooks 0–4** — Bank Marketing dataset, binary classification (predict term-deposit subscription). Run sequentially; notebooks share state via `%store`.
-- **Notebook 5** — UCI Abalone dataset, regression. A standalone SageMaker Pipelines demo that can run independently of Notebooks 0–4.
+- **Notebook 5** (`5-sagemaker-pipelines.ipynb`) — Bank Marketing dataset, SageMaker Pipelines automation. Orchestrates the preprocessing → training → evaluation → conditional model registration workflow from Notebooks 1–4 into a single reusable pipeline. Requires Notebooks 0 and 1 to be run first.
+- **Notebook 6** (`6-pipelines_preprocess_train_evaluate_batch_transform.ipynb`) — UCI Abalone dataset, regression. A standalone SageMaker Pipelines demo that can run independently of Notebooks 0–5.
 
 ## Features
 
@@ -27,7 +28,8 @@ The workshop contains two independent tracks:
 - **XGBoost training with Script Mode** — Train built-in and custom XGBoost models with hyperparameter tuning via SageMaker Training Jobs.
 - **MLflow experiment tracking** — Log parameters, metrics, and artifacts; register models in the MLflow Model Registry.
 - **Real-time endpoint deployment with A/B testing** — Deploy models to SageMaker endpoints and route traffic across model variants.
-- **End-to-end pipeline automation** — Orchestrate preprocessing, training, evaluation, and batch transform steps with SageMaker Pipelines.
+- **Bank Marketing pipeline automation** — Orchestrate preprocessing → dual-model parallel training → evaluation → conditional model registration with SageMaker Pipelines (Notebook 5). The pipeline compares a Conservative and an Aggressive XGBoost model and registers the best to Model Registry only if AUC ≥ threshold.
+- **End-to-end pipeline automation** — Orchestrate preprocessing, training, evaluation, and batch transform steps with SageMaker Pipelines (Notebook 6, Abalone dataset).
 
 ## Prerequisites
 
@@ -65,8 +67,12 @@ Run the notebooks in order:
 2-training.ipynb                 # Train XGBoost models, register to MLflow Model Registry
 3-model-evaluation.ipynb         # Evaluate and compare models, select the best
 4-test-and-deploy.ipynb          # Deploy to SageMaker endpoint, run A/B test
-5-pipelines_...ipynb             # (Standalone) SageMaker Pipelines demo with Abalone dataset
+5-sagemaker-pipelines.ipynb      # Bank Marketing pipeline: preprocess → train (x2) → evaluate → register
+6-pipelines_...ipynb             # (Standalone) SageMaker Pipelines demo with Abalone dataset
 ```
+
+> **Notebook 5 prerequisites**: Run `0-setup.ipynb` and `1-preprocessing.ipynb` first so that
+> `input_source` and other shared variables are available via `%store`.
 
 Example: invoking the deployed endpoint from Notebook 4.
 
@@ -92,9 +98,14 @@ smai-end-to-end-smus/
 ├── 1-preprocessing.ipynb                  # SageMaker Processing Job — feature engineering
 ├── 2-training.ipynb                       # SageMaker Training Job — XGBoost + MLflow
 ├── 3-model-evaluation.ipynb               # Model comparison and best-model selection
-├── 4-test-and-deploy.ipynb               # Real-time endpoint deploy + A/B test
-├── 5-pipelines_preprocess_train_          # Standalone SageMaker Pipelines demo (Abalone)
+├── 4-test-and-deploy.ipynb                # Real-time endpoint deploy + A/B test
+├── 5-sagemaker-pipelines.ipynb            # Bank Marketing pipeline automation (Lab 5)
+├── 6-pipelines_preprocess_train_          # Standalone SageMaker Pipelines demo (Abalone, Lab 6)
 │   evaluate_batch_transform.ipynb
+├── pipeline_code/                         # Scripts used by Notebook 5 pipeline
+│   ├── preprocessing.py                   #   — Feature engineering (sep=",", y_no leakage-free)
+│   ├── evaluation.py                      #   — Dual-model AUC comparison
+│   └── requirements.txt                   #   — pandas, numpy, scikit-learn
 ├── CLAUDE.md                              # Claude Code project instructions
 └── README.md                             # This file
 
@@ -142,11 +153,12 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 개요
 
-이 워크샵은 **Amazon SageMaker Unified Studio** 위에서 완전한 머신러닝 워크플로우를 단계별로 구축하는 실습 가이드입니다. 데이터 전처리, 모델 훈련, **MLflow** 실험 추적, 평가, 실시간 배포, 파이프라인 자동화까지 6개의 Jupyter 노트북으로 구성되어 있습니다.
+이 워크샵은 **Amazon SageMaker Unified Studio** 위에서 완전한 머신러닝 워크플로우를 단계별로 구축하는 실습 가이드입니다. 데이터 전처리, 모델 훈련, **MLflow** 실험 추적, 평가, 실시간 배포, 파이프라인 자동화까지 7개의 Jupyter 노트북으로 구성되어 있습니다.
 
-워크샵은 두 개의 독립적인 트랙으로 구성됩니다.
+워크샵은 세 개의 독립적인 트랙으로 구성됩니다.
 - **노트북 0–4** — 은행 마케팅 데이터셋, 이진 분류 (정기예금 가입 여부 예측). 순차 실행하며 `%store`를 통해 노트북 간 상태를 공유합니다.
-- **노트북 5** — UCI Abalone 데이터셋, 회귀. 노트북 0–4와 무관하게 단독 실행 가능한 SageMaker Pipelines 독립 데모입니다.
+- **노트북 5** (`5-sagemaker-pipelines.ipynb`) — 은행 마케팅 데이터셋, SageMaker Pipelines 자동화. 노트북 1–4의 전처리 → 훈련(병렬) → 평가 → 조건부 모델 등록 워크플로우를 하나의 재사용 가능한 파이프라인으로 오케스트레이션합니다. 노트북 0과 1을 먼저 실행해야 합니다.
+- **노트북 6** (`6-pipelines_preprocess_train_evaluate_batch_transform.ipynb`) — UCI Abalone 데이터셋, 회귀. 노트북 0–5와 무관하게 단독 실행 가능한 SageMaker Pipelines 독립 데모입니다.
 
 ## 주요 기능
 
@@ -154,7 +166,8 @@ This project is licensed under the [MIT License](LICENSE).
 - **Script Mode XGBoost 훈련** — SageMaker Training Job을 통해 빌트인 및 커스텀 XGBoost 모델을 훈련하고 하이퍼파라미터를 튜닝합니다.
 - **MLflow 실험 추적** — 파라미터, 메트릭, 아티팩트를 기록하고 MLflow Model Registry에 모델을 등록합니다.
 - **A/B 테스트를 포함한 실시간 엔드포인트 배포** — SageMaker 엔드포인트에 모델을 배포하고 트래픽을 여러 모델 변형에 분산합니다.
-- **엔드투엔드 파이프라인 자동화** — SageMaker Pipelines로 전처리, 훈련, 평가, 배치 변환 단계를 오케스트레이션합니다.
+- **은행 마케팅 파이프라인 자동화** — SageMaker Pipelines로 전처리 → Conservative/Aggressive XGBoost 병렬 훈련 → 평가 → AUC 임계값 기반 조건부 모델 등록을 오케스트레이션합니다 (노트북 5).
+- **엔드투엔드 파이프라인 자동화** — SageMaker Pipelines로 전처리, 훈련, 평가, 배치 변환 단계를 오케스트레이션합니다 (노트북 6, Abalone 데이터셋).
 
 ## 사전 요구 사항
 
@@ -192,8 +205,12 @@ cd smai-end-to-end-smus
 2-training.ipynb                 # XGBoost 모델 훈련, MLflow Model Registry에 등록
 3-model-evaluation.ipynb         # 모델 비교 및 최고 성능 모델 선택
 4-test-and-deploy.ipynb          # SageMaker 엔드포인트 배포, A/B 테스트
-5-pipelines_...ipynb             # (독립 실행) Abalone 데이터셋으로 SageMaker Pipelines 데모
+5-sagemaker-pipelines.ipynb      # 은행 마케팅 파이프라인: 전처리 → 훈련(병렬) → 평가 → 등록
+6-pipelines_...ipynb             # (독립 실행) Abalone 데이터셋으로 SageMaker Pipelines 데모
 ```
+
+> **노트북 5 사전 요건**: `%store`를 통해 `input_source` 등 공유 변수를 로드하므로
+> `0-setup.ipynb`와 `1-preprocessing.ipynb`를 먼저 실행해야 합니다.
 
 노트북 4에서 배포된 엔드포인트를 호출하는 예시입니다.
 
@@ -219,9 +236,14 @@ smai-end-to-end-smus/
 ├── 1-preprocessing.ipynb                  # SageMaker Processing Job — 특성 엔지니어링
 ├── 2-training.ipynb                       # SageMaker Training Job — XGBoost + MLflow
 ├── 3-model-evaluation.ipynb               # 모델 비교 및 최적 모델 선택
-├── 4-test-and-deploy.ipynb               # 실시간 엔드포인트 배포 + A/B 테스트
-├── 5-pipelines_preprocess_train_          # 독립 SageMaker Pipelines 데모 (Abalone)
+├── 4-test-and-deploy.ipynb                # 실시간 엔드포인트 배포 + A/B 테스트
+├── 5-sagemaker-pipelines.ipynb            # 은행 마케팅 파이프라인 자동화 (Lab 5)
+├── 6-pipelines_preprocess_train_          # 독립 SageMaker Pipelines 데모 (Abalone, Lab 6)
 │   evaluate_batch_transform.ipynb
+├── pipeline_code/                         # 노트북 5 파이프라인에서 사용하는 스크립트
+│   ├── preprocessing.py                   #   — 특성 엔지니어링 (쉼표 구분자, y_no 누수 제거)
+│   ├── evaluation.py                      #   — 두 모델 AUC 비교
+│   └── requirements.txt                   #   — pandas, numpy, scikit-learn
 ├── CLAUDE.md                              # Claude Code 프로젝트 지침
 └── README.md                             # 이 파일
 
