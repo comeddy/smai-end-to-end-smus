@@ -12,9 +12,7 @@ SageMaker Processing 컨테이너의 표준 경로(/opt/ml/processing)를 사용
          test/test_y.csv           -- 테스트 레이블 (10%)
          baseline/baseline.csv    -- Model Monitor 베이스라인용 (훈련과 동일)
 """
-import argparse
 import os
-import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
