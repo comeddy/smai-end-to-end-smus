@@ -132,7 +132,7 @@ This project is licensed under the [MIT License](LICENSE).
 ## Contact
 
 - **Original Author**: [chloe-kwak](https://github.com/chloe-kwak) | [linked](https://github.com/chloe-kwak/smai-end-to-end-smus)
-- **Maintainer**: [comeddy](https://github.com/comeddy)
+- **Maintainer**: [comeddy](https://github.com/comeddy) | [linked](https://www.linkedin.com/in/zerojin/)
 - **Issues**: [github.com/comeddy/smai-end-to-end-smus/issues](https://github.com/comeddy/smai-end-to-end-smus/issues)
 - **Email**: comeddy@gmail.com
 
@@ -259,6 +259,6 @@ smai-end-to-end-smus/
 ## 연락처
 
 - **소스 원저자**: [chloe-kwak](https://github.com/chloe-kwak) | [linked](https://github.com/chloe-kwak/smai-end-to-end-smus)
-- **메인테이너**: [comeddy](https://github.com/comeddy)
+- **메인테이너**: [comeddy](https://github.com/comeddy) | [linked](https://www.linkedin.com/in/zerojin/)
 - **이슈 트래커**: [github.com/comeddy/smai-end-to-end-smus/issues](https://github.com/comeddy/smai-end-to-end-smus/issues)
 - **이메일**: comeddy@gmail.com
