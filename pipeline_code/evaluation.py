@@ -41,6 +41,12 @@ def load_booster(model_dir):
 
 
 def main():
+    # MLflow 의존성 설치 (XGBoost 컨테이너에 미포함)
+    import subprocess, sys as _sys
+    subprocess.check_call([_sys.executable, "-m", "pip", "install", "-q",
+                           "mlflow==2.13.2", "sagemaker-mlflow"])
+    import importlib as _il; _il.invalidate_caches()  # 새로 설치된 패키지 경로 인식
+
     # 헤더 없는 CSV 로드 (전처리 스크립트의 header=False 저장 방식과 일치)
     test_x = pd.read_csv(f"{BASE}/test/test_x.csv", header=None)
     test_y = pd.read_csv(f"{BASE}/test/test_y.csv", header=None).squeeze()
