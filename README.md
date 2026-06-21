@@ -31,6 +31,7 @@ The workshop contains two independent tracks:
 
 ## Prerequisites
 
+- **Amazon SageMaker Workshop** environment pre-configured — follow the setup guide at [catalog.us-east-1.prod.workshops.aws](https://catalog.us-east-1.prod.workshops.aws/workshops/06dbe60c-3a94-463e-8ac2-18c7f85788d4/ko-KR/07aiml/01-ml) before running this workshop.
 - Access to **Amazon SageMaker Unified Studio** (SageMaker Studio domain with a DataZone project)
 - Python 3.8 or later
 - Jupyter environment (provided by SageMaker Studio)
@@ -155,6 +156,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 사전 요구 사항
 
+- **Amazon SageMaker Workshop** 환경이 사전 구성되어 있어야 합니다 — 이 워크샵을 시작하기 전에 [워크샵 설정 가이드](https://catalog.us-east-1.prod.workshops.aws/workshops/06dbe60c-3a94-463e-8ac2-18c7f85788d4/ko-KR/07aiml/01-ml)를 먼저 완료하십시오.
 - **Amazon SageMaker Unified Studio** 접근 권한 (DataZone 프로젝트가 포함된 SageMaker Studio 도메인)
 - Python 3.8 이상
 - Jupyter 환경 (SageMaker Studio에서 제공)
