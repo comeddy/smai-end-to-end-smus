@@ -43,10 +43,16 @@ def load_booster(model_dir):
 def main():
     # MLflow 의존성 설치 (XGBoost 컨테이너에 미포함)
     import subprocess, sys as _sys
-    # --force-reinstall: 컨테이너에 구버전 mlflow가 이미 있을 경우 덮어씁니다
+    # XGBoost 컨테이너의 /miniconda3/ 구버전 mlflow와 충돌을 피하기 위해
+    # --target으로 /tmp/ml_deps에 별도 설치 후 sys.path 앞에 추가합니다.
+    # (--force-reinstall은 /miniconda3/을 덮지 못하고 sagemaker-mlflow가
+    #  mlflow 2.13.2에 없는 MlflowTracingException을 요구하므로 최신 mlflow 사용)
+    _ml_dir = "/tmp/ml_deps"
     subprocess.check_call([_sys.executable, "-m", "pip", "install", "-q",
-                           "--force-reinstall", "mlflow==2.13.2", "sagemaker-mlflow"])
-    import importlib as _il; _il.invalidate_caches()  # 새로 설치된 패키지 경로 인식
+                           "--target", _ml_dir, "mlflow", "sagemaker-mlflow"])
+    if _ml_dir not in _sys.path:
+        _sys.path.insert(0, _ml_dir)
+    import importlib as _il; _il.invalidate_caches()
 
     # 헤더 없는 CSV 로드 (전처리 스크립트의 header=False 저장 방식과 일치)
     test_x = pd.read_csv(f"{BASE}/test/test_x.csv", header=None)
