@@ -129,11 +129,10 @@ smai-end-to-end-smus/
 
 This project is licensed under the [MIT License](LICENSE).
 
-## Contact
+## Contributors
 
-- **Maintainer**: [comeddy](https://github.com/comeddy)
-- **Issues**: [github.com/comeddy/smai-end-to-end-smus/issues](https://github.com/comeddy/smai-end-to-end-smus/issues)
-- **Email**: comeddy@gmail.com
+- **[chloe-kwak](https://github.com/chloe-kwak)** — Original author
+- **[comeddy](https://github.com/comeddy)** — Maintainer
 
 ---
 
@@ -255,8 +254,7 @@ smai-end-to-end-smus/
 
 이 프로젝트는 [MIT 라이선스](LICENSE)를 따릅니다.
 
-## 연락처
+## 기여자
 
-- **메인테이너**: [comeddy](https://github.com/comeddy)
-- **이슈 트래커**: [github.com/comeddy/smai-end-to-end-smus/issues](https://github.com/comeddy/smai-end-to-end-smus/issues)
-- **이메일**: comeddy@gmail.com
+- **[chloe-kwak](https://github.com/chloe-kwak)** — 소스 원저자
+- **[comeddy](https://github.com/comeddy)** — 메인테이너
