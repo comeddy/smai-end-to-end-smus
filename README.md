@@ -71,6 +71,7 @@ Run the notebooks in order:
 Example: invoking the deployed endpoint from Notebook 4.
 
 ```python
+# Send a single preprocessed CSV row to a deployed SageMaker endpoint and print the prediction score.
 import boto3, json
 
 runtime = boto3.client("sagemaker-runtime", region_name=region)
@@ -196,6 +197,7 @@ cd smai-end-to-end-smus
 노트북 4에서 배포된 엔드포인트를 호출하는 예시입니다.
 
 ```python
+# 이미 배포된 SageMaker 엔드포인트에 전처리된 CSV 한 행을 실시간으로 보내 예측 점수를 받아 출력합니다.
 import boto3, json
 
 runtime = boto3.client("sagemaker-runtime", region_name=region)
