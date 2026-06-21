@@ -41,19 +41,6 @@ def load_booster(model_dir):
 
 
 def main():
-    # MLflow 의존성 설치 (XGBoost 컨테이너에 미포함)
-    import subprocess, sys as _sys
-    # XGBoost 컨테이너의 /miniconda3/ 구버전 mlflow와 충돌을 피하기 위해
-    # --target으로 /tmp/ml_deps에 별도 설치 후 sys.path 앞에 추가합니다.
-    # (--force-reinstall은 /miniconda3/을 덮지 못하고 sagemaker-mlflow가
-    #  mlflow 2.13.2에 없는 MlflowTracingException을 요구하므로 최신 mlflow 사용)
-    _ml_dir = "/tmp/ml_deps"
-    subprocess.check_call([_sys.executable, "-m", "pip", "install", "-q",
-                           "--target", _ml_dir, "mlflow", "sagemaker-mlflow"])
-    if _ml_dir not in _sys.path:
-        _sys.path.insert(0, _ml_dir)
-    import importlib as _il; _il.invalidate_caches()
-
     # 헤더 없는 CSV 로드 (전처리 스크립트의 header=False 저장 방식과 일치)
     test_x = pd.read_csv(f"{BASE}/test/test_x.csv", header=None)
     test_y = pd.read_csv(f"{BASE}/test/test_y.csv", header=None).squeeze()
@@ -102,12 +89,27 @@ def main():
     print("evaluation.json 저장 완료")
 
     # MLflow 로깅 (선택적)
-    # 환경 변수로 ARN이 전달되지 않으면 조용히 건너뜁니다.
-    # MLflow 실패가 파이프라인 전체를 중단시키지 않도록 try/except로 보호합니다.
+    # pip install은 try 블록 내부에서 실행합니다.
+    # 네트워크 장애 등 설치 실패가 evaluation.json 작성을 막으면 안 됩니다.
+    # CLAUDE.md: "tracking failure never kills the job"
     try:
         mlflow_tracking_arn = os.environ.get("MLFLOW_TRACKING_ARN")
         exp_name = os.environ.get("MLFLOW_EXPERIMENT_NAME")
         if mlflow_tracking_arn:
+            # XGBoost 컨테이너의 구버전 mlflow 충돌 방지:
+            #   --target: /tmp/ml_deps에 별도 설치
+            #   --no-deps: numpy 등 기존 패키지 재설치 방지 (ABI 충돌 방지)
+            #   sys.path.append: 기존 numpy/xgboost 바인딩 우선 유지
+            import subprocess, sys as _sys, shutil, importlib as _il
+            _ml_dir = "/tmp/ml_deps"
+            if os.path.exists(_ml_dir):
+                shutil.rmtree(_ml_dir)  # 재시도 시 파일 누적 방지
+            subprocess.check_call([_sys.executable, "-m", "pip", "install", "-q",
+                                   "--target", _ml_dir, "--no-deps",
+                                   "mlflow", "sagemaker-mlflow"])
+            if _ml_dir not in _sys.path:
+                _sys.path.append(_ml_dir)  # append: 기존 패키지 우선순위 보존
+            _il.invalidate_caches()
             import mlflow
             mlflow.set_tracking_uri(mlflow_tracking_arn)
             mlflow.set_experiment(exp_name or "bank-pipeline")
