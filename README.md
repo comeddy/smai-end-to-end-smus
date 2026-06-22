@@ -22,6 +22,35 @@ The workshop contains three independent tracks:
 - **Notebook 5** (`5-sagemaker-pipelines.ipynb`) — Bank Marketing dataset, SageMaker Pipelines automation. Orchestrates the preprocessing → training → evaluation → conditional model registration workflow from Notebooks 1–4 into a single reusable pipeline. Requires Notebooks 0 and 1 to be run first.
 - **Notebook 6** (`6-pipelines_preprocess_train_evaluate_batch_transform.ipynb`) — UCI Abalone dataset, regression. A standalone SageMaker Pipelines demo that can run independently of Notebooks 0–5.
 
+### How the Notebook 5 pipeline works
+
+![SageMaker Pipeline DAG](images/notebook5_sagemaker_pipeline_dag.png)
+
+```
+BankPreprocess
+    ├─ BankTrainConservative  (parallel)
+    └─ BankTrainAggressive    (parallel)
+              └─ BankEvaluate
+                      └─ BankAUCCondition
+                              ├─ (AUC ≥ threshold) BankRegisterModel
+                              └─ (AUC <  threshold) BankPipelineFail
+```
+
+**The DAG is built from data flow — you don't declare step order.** SageMaker infers the execution order by looking at which step consumes another step's *output* as its *input*:
+
+- The two training steps take `BankPreprocess`'s output (train/validation channels) as input, so SageMaker automatically orders **preprocess → train**.
+- Both training steps reference *only* the same preprocessing output and never reference each other, so they have no dependency between them and **run in parallel**.
+- `BankEvaluate` consumes both trained models, so it runs only **after both training jobs finish**.
+
+In other words, you don't write "run B after A" — you *wire* B to consume A's artifacts, and SageMaker derives the order. This data-flow-driven DAG construction is the core idea of SageMaker Pipelines.
+
+**Conditional registration (RegisterModel) is a quality gate.** The `BankAUCCondition` step compares the evaluated AUC against a threshold and runs the next step only when the condition is true:
+
+- **AUC ≥ threshold** → `BankRegisterModel` registers the *better* of the two models to MLflow / the SageMaker Model Registry.
+- **AUC < threshold** (neither model clears the bar) → registration is *skipped* and the pipeline ends with **no model** via `BankPipelineFail`.
+
+This branch is exactly what prevents an underperforming model from automatically becoming a production candidate — only models that pass the bar reach the registry, with no manual metric check required.
+
 ## Features
 
 - **Scalable data preprocessing** — Run large-scale feature engineering and data splits using SageMaker Processing Jobs.
@@ -159,6 +188,35 @@ This project is licensed under the [MIT License](LICENSE).
 - **노트북 0–4** — 은행 마케팅 데이터셋, 이진 분류 (정기예금 가입 여부 예측). 순차 실행하며 `%store`를 통해 노트북 간 상태를 공유합니다.
 - **노트북 5** (`5-sagemaker-pipelines.ipynb`) — 은행 마케팅 데이터셋, SageMaker Pipelines 자동화. 노트북 1–4의 전처리 → 훈련(병렬) → 평가 → 조건부 모델 등록 워크플로우를 하나의 재사용 가능한 파이프라인으로 오케스트레이션합니다. 노트북 0과 1을 먼저 실행해야 합니다.
 - **노트북 6** (`6-pipelines_preprocess_train_evaluate_batch_transform.ipynb`) — UCI Abalone 데이터셋, 회귀. 노트북 0–5와 무관하게 단독 실행 가능한 SageMaker Pipelines 독립 데모입니다.
+
+### 노트북 5 파이프라인 동작 원리
+
+![SageMaker Pipeline DAG](images/notebook5_sagemaker_pipeline_dag.png)
+
+```
+BankPreprocess
+    ├─ BankTrainConservative  (병렬)
+    └─ BankTrainAggressive    (병렬)
+              └─ BankEvaluate
+                      └─ BankAUCCondition
+                              ├─ (AUC ≥ 임계값) BankRegisterModel
+                              └─ (AUC <  임계값) BankPipelineFail
+```
+
+**DAG는 "데이터 흐름"으로 자동 구성되며, 단계 순서를 직접 선언하지 않습니다.** SageMaker는 한 단계가 다른 단계의 *출력*을 *입력*으로 참조하는지를 보고 실행 순서를 추론합니다.
+
+- 두 학습 단계가 `BankPreprocess`의 출력(train·validation 채널)을 입력으로 받으므로, SageMaker가 자동으로 **전처리 → 학습** 순서를 잡습니다.
+- 두 학습 단계는 *동일한 전처리 출력만* 참조하고 서로를 참조하지 않으므로, 둘 사이에 의존성이 없어 **병렬로 실행**됩니다.
+- `BankEvaluate`는 두 학습 모델을 모두 입력으로 받으므로, 두 학습이 **모두 끝난 뒤**에만 실행됩니다.
+
+즉, "A 다음에 B를 실행하라"고 순서를 적는 대신 **B가 A의 결과물을 사용하도록 배선(wiring)하면 순서는 SageMaker가 알아서 결정**합니다. 이렇게 데이터 흐름만으로 DAG가 자동 구성되는 것이 SageMaker Pipelines의 핵심입니다.
+
+**조건부 모델 등록(RegisterModel)은 품질 게이트입니다.** `BankAUCCondition` 단계는 평가된 AUC를 임계값과 비교하여, **조건이 참일 때만** 다음 단계를 실행합니다.
+
+- **AUC ≥ 임계값** → `BankRegisterModel`이 두 모델 중 *더 나은 쪽*을 MLflow / SageMaker Model Registry에 등록합니다.
+- **AUC < 임계값** (어느 모델도 기준 미달) → 등록을 *건너뛰고* `BankPipelineFail`로 파이프라인이 **모델 없이 종료**됩니다.
+
+이 분기가 바로 **"성능 미달 모델이 자동으로 프로덕션 후보가 되는 것"을 막는 품질 게이트(quality gate)** 역할입니다. 사람이 매번 메트릭을 확인하지 않아도, 기준을 통과한 모델만 레지스트리에 올라갑니다.
 
 ## 주요 기능
 
