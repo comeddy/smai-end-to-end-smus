@@ -174,7 +174,6 @@ This project is licensed under the [MIT License](LICENSE).
 - **Maintainer**: [AWS SA Chloe(YoungHwa) Kwak](https://github.com/chloe-kwak) | [linked](https://www.linkedin.com/in/younghwakwak/)
 - **Maintainer**: [AWS SA Youngjin Kim](https://github.com/comeddy) | [linked](https://www.linkedin.com/in/zerojin/)
 - **Issues**: [github.com/comeddy/smai-end-to-end-smus/issues](https://github.com/comeddy/smai-end-to-end-smus/issues)
-- **Email**: comeddy@gmail.com, youngjik@amazon.com
 
 ---
 
@@ -341,4 +340,3 @@ smai-end-to-end-smus/
 - **메인테이너**: [AWS SA Chloe(YoungHwa) Kwak](https://github.com/chloe-kwak) | [linked](https://www.linkedin.com/in/younghwakwak/)
 - **메인테이너**: [AWS SA Youngjin Kim](https://github.com/comeddy) | [linked](https://www.linkedin.com/in/zerojin/)
 - **이슈 트래커**: [github.com/comeddy/smai-end-to-end-smus/issues](https://github.com/comeddy/smai-end-to-end-smus/issues)
-- **이메일**: comeddy@gmail.com, youngjik@amazon.com
